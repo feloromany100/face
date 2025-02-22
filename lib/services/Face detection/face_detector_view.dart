@@ -51,19 +51,24 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
         ),
         Positioned(
           bottom: 20,
-          left: 0,
-          right: 0,
-          child: Center(
-            child: FloatingActionButton(
+          left: 80, // Increase the left margin
+          right: 80, // Increase the right margin
+          child: SizedBox(
+            child: ElevatedButton(
               onPressed: _faces.length == 1 ? _navigateToVerification : null,
-              backgroundColor: _faces.length == 1 ? Colors.blue : Colors.grey,
-              child: const Text("Detect the face"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _faces.length == 1 ? Colors.blue : Colors.grey[900],
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+              child: const Text(
+                "Capture the face",
+                style: TextStyle(fontSize: 16),
+              ),
             ),
           ),
         ),
       ],
-    );
-  }
+    );  }
 
   Future<void> _processImage(InputImage inputImage, CameraImage cameraImage) async {
     if (!_canProcess || _isBusy) return;

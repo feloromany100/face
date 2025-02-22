@@ -6,17 +6,19 @@ class FaceEmbeddingExtractor {
   late tfl.Interpreter faceNetInterpreter;
   bool _isLoaded = false;
 
-  Future<void> loadModel() async {
+  Future<bool> loadModel() async {
     if (!_isLoaded) {
-      mobileFaceNetInterpreter = await tfl.Interpreter.fromAsset(
-        'assets/mobilefacenet.tflite',
-      );
-
-      faceNetInterpreter = await tfl.Interpreter.fromAsset(
-        'assets/facenet.tflite',
-      );
-      _isLoaded = true;
+      try {
+        mobileFaceNetInterpreter = await tfl.Interpreter.fromAsset('assets/mobilefacenet.tflite');
+        faceNetInterpreter = await tfl.Interpreter.fromAsset('assets/facenet.tflite');
+        _isLoaded = true;
+        return true; // Indicate success
+      } catch (e) {
+        print("Error loading models: $e");
+        return false; // Indicate failure
+      }
     }
+    return true; // Already loaded
   }
 
   Future<List<double>> extractEmbeddingFromMobileFaceNet(img.Image faceImage) async {
@@ -38,9 +40,15 @@ class FaceEmbeddingExtractor {
   }
 
   List<List<List<List<double>>>> preprocessImage(img.Image image) {
-    return List.generate(1, (i) => List.generate(112, (y) => List.generate(112, (x) {
-      int pixel = image.getPixel(x, y);
-      return [(img.getRed(pixel) / 255.0), (img.getGreen(pixel) / 255.0), (img.getBlue(pixel) / 255.0)];
-    })));
+    return [
+      List.generate(112, (y) => List.generate(112, (x) {
+        int pixel = image.getPixel(x, y);
+        return [
+          img.getRed(pixel) / 255.0,
+          img.getGreen(pixel) / 255.0,
+          img.getBlue(pixel) / 255.0
+        ];
+      }))
+    ];
   }
 }
