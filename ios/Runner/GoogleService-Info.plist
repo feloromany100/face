@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyCIyagB6f7Ag01nLXrUVYZQmZJ1ERoryuQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>300449714333</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.faceRecognition33</string>
+	<key>PROJECT_ID</key>
+	<string>face-recognition-75a3f</string>
+	<key>STORAGE_BUCKET</key>
+	<string>face-recognition-75a3f.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:300449714333:ios:a0896b006f99941881c474</string>
+</dict>
+</plist>
