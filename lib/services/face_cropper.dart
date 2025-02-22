@@ -2,9 +2,8 @@ import 'dart:typed_data';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:image/image.dart' as img;
 import 'package:camera/camera.dart';
-import '../../services/Face recognition/embedding_extraction.dart';
 
-Future<void> cropAndExtractEmbedding(CameraImage image, Face face) async {
+Future<img.Image> cropFace(CameraImage image, Face face) async {
   // Convert CameraImage to img.Image
   img.Image convertedImage = _convertCameraImage(image);
 
@@ -22,19 +21,7 @@ Future<void> cropAndExtractEmbedding(CameraImage image, Face face) async {
 
   // Crop the face
   img.Image croppedFace = img.copyCrop(convertedImage, cropLeft, cropTop, cropWidth, cropHeight);
-
-  // Extract embedding automatically
-  FaceEmbeddingExtractor extractor = FaceEmbeddingExtractor();
-  await extractor.loadModel();  // Ensure models are loaded
-
-  List<double> embedding = await extractor.extractEmbeddingFromMobileFaceNet(croppedFace);
-  List<double> embedding2 = await extractor.extractEmbeddingFromFaceNet(croppedFace);
-
-
-  // TODO: Save embedding to Firestore or another storage
-  print("Embedding from mobile facenet extracted: $embedding");
-  print("Embedding from facenet extracted: $embedding2");
-
+  return croppedFace;
 }
 
 img.Image _convertCameraImage(CameraImage cameraImage) {

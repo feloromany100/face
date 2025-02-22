@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 import 'package:image/image.dart' as img;
 
@@ -10,20 +8,12 @@ class FaceEmbeddingExtractor {
 
   Future<void> loadModel() async {
     if (!_isLoaded) {
-      var interpreterOptions = tfl.InterpreterOptions();
-      if (Platform.isAndroid) {
-        interpreterOptions.addDelegate(tfl.XNNPackDelegate());
-      } else if (Platform.isIOS) {
-        interpreterOptions.addDelegate(tfl.GpuDelegate()); // Uses Metal for optimization
-      }
       mobileFaceNetInterpreter = await tfl.Interpreter.fromAsset(
         'assets/mobilefacenet.tflite',
-        options: interpreterOptions,
       );
 
       faceNetInterpreter = await tfl.Interpreter.fromAsset(
         'assets/facenet.tflite',
-        options: interpreterOptions,
       );
       _isLoaded = true;
     }

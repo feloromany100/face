@@ -1,9 +1,12 @@
+import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'detector_view.dart';
 import 'face_detector_painter.dart';
 import '../../services/face_cropper.dart';
+import 'face_verification_page.dart';
+import 'package:image/image.dart' as img;
 
 class FaceDetectorView extends StatefulWidget {
   const FaceDetectorView({super.key});
@@ -15,8 +18,8 @@ class FaceDetectorView extends StatefulWidget {
 class _FaceDetectorViewState extends State<FaceDetectorView> {
   final FaceDetector _faceDetector = FaceDetector(
     options: FaceDetectorOptions(
-      enableContours: true,
-      enableLandmarks: true,
+      enableContours: false,
+      enableLandmarks: false,
     ),
   );
   bool _canProcess = true;
@@ -24,6 +27,8 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
   CustomPaint? _customPaint;
   String? _text;
   var _cameraLensDirection = CameraLensDirection.front;
+  List<Face> _faces = [];
+  CameraImage? _cameraImage;
 
   @override
   void dispose() {
@@ -34,28 +39,45 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
 
   @override
   Widget build(BuildContext context) {
-    return DetectorView(
-      title: 'Face Detector',
-      customPaint: _customPaint,
-      text: _text,
-      onImage: _processImage,
-      initialCameraLensDirection: _cameraLensDirection,
-      onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
+    return Stack(
+      children: [
+        DetectorView(
+          title: 'Face Detector',
+          customPaint: _customPaint,
+          text: _text,
+          onImage: _processImage,
+          initialCameraLensDirection: _cameraLensDirection,
+          onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
+        ),
+        Positioned(
+          bottom: 20,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: FloatingActionButton(
+              onPressed: _faces.length == 1 ? _navigateToVerification : null,
+              backgroundColor: _faces.length == 1 ? Colors.blue : Colors.grey,
+              child: const Text("Detect the face"),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Future<void> _processImage(InputImage inputImage, CameraImage cameraImage) async {
     if (!_canProcess || _isBusy) return;
     _isBusy = true;
+    _cameraImage = cameraImage;
 
     setState(() {
       _text = '';
     });
 
     final faces = await _faceDetector.processImage(inputImage);
+    _faces = faces;
 
-    if (inputImage.metadata?.size != null &&
-        inputImage.metadata?.rotation != null) {
+    if (inputImage.metadata?.size != null && inputImage.metadata?.rotation != null) {
       final painter = FaceDetectorPainter(
         faces,
         inputImage.metadata!.size,
@@ -67,15 +89,28 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
       _customPaint = null;
     }
 
-    if (faces.isNotEmpty) {
-      for (final face in faces) {
-        await cropAndExtractEmbedding(cameraImage, face);
-      }
-    }
-
     _isBusy = false;
     if (mounted) {
       setState(() {});
+    }
+  }
+
+  void _navigateToVerification() async {
+    if (_faces.isNotEmpty && _cameraImage != null) {
+      final croppedFace = await cropFace(_cameraImage!, _faces.first);
+
+      // Convert img.Image to Uint8List
+      final Uint8List croppedFaceBytes = Uint8List.fromList(img.encodeJpg(croppedFace));
+
+      if(mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                FaceVerificationPage(croppedFace: croppedFaceBytes),
+          ),
+        );
+      }
     }
   }
 }
