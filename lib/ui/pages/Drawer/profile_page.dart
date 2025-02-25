@@ -24,6 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
    // Local state variables
    String? mobilePhone;
+   String? name;
    String? email;
    String? address;
    DateTime? birthdate;
@@ -43,6 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void _initializeUserData() async {
      userData = await _getUserData(context, widget.personID);
      setState(() {
+        name = userData?.name;
        mobilePhone = userData?.mobile;
        email = userData?.email;
        address = userData?.address;
@@ -80,9 +82,20 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             const SizedBox(height: 10),
-            Text(
-              userData!.name,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.edit, color: Colors.transparent),
+                Text(
+                  name!,
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.edit, color: Colors.blueAccent),
+                  onPressed: () => _showEditDialog('name', name),
+                ),
+              ],
             ),
             const SizedBox(height: 5),
             Text(
@@ -154,6 +167,7 @@ class _ProfilePageState extends State<ProfilePage> {
      TextEditingController controller = TextEditingController(text: currentValue.toString());
      bool isNumberField = ["mobile", "mother_number", "father_number"].contains(fieldName);
      bool isEmailField = fieldName == "email";
+     bool isNameField = fieldName == "name";
      bool isGradeField = fieldName == "grade";
      bool isBirthdateField = fieldName == "birthdate";
 
@@ -188,6 +202,7 @@ class _ProfilePageState extends State<ProfilePage> {
                  String newValue = controller.text.trim();
                  if (isNumberField && !_validatePhoneNumber(newValue)) return;
                  if (isEmailField && !_validateEmail(newValue)) return;
+                 if (isNameField && !_validateName(newValue)) return;
                  _updateFirestoreValue(widget.personID, fieldName, newValue);
                  Navigator.pop(context);
                },
@@ -261,6 +276,16 @@ class _ProfilePageState extends State<ProfilePage> {
      return true;
    }
 
+   bool _validateName(String name) {
+     if (name.length > 25) {
+       ScaffoldMessenger.of(context).showSnackBar(
+         const SnackBar(content: Text("الاسم يجب أن يكون أقل من ٢٥ حرف")),
+       );
+       return false;
+     }
+     return true;
+   }
+
    bool _validateEmail(String email) {
      if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$').hasMatch(email)) {
        ScaffoldMessenger.of(context).showSnackBar(
@@ -284,6 +309,9 @@ class _ProfilePageState extends State<ProfilePage> {
        // Update local state
        setState(() {
          switch (fieldName) {
+           case "name":
+             name = newValue;
+             break;
            case "mobile":
              mobilePhone = newValue;
              break;
