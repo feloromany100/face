@@ -24,29 +24,31 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  void updateImageUrl(String? newImageUrl) {
+  void updateUserField(String field, dynamic value) {
+    if (_user == null) return;
+
+    _user = _user!.copyWith(
+      name: field == "name" ? value : user!.name,
+      mobile: field == "mobile" ? value : user!.mobile,
+      email: field == "email" ? value : user!.email,
+      address: field == "address" ? value : user!.address,
+      birthdate: field == "birthdate" ? value : user!.birthdate,
+      fatherOfConfession:
+      field == "father_of_confession" ? value : user!.fatherOfConfession,
+      school: field == "school_college" ? value : user!.school,
+      grade: field == "grade" ? int.tryParse(value.toString()) : user!.grade,
+      motherPhone: field == "mother_number" ? value : user!.motherPhone,
+      fatherPhone: field == "father_number" ? value : user!.fatherPhone,
+      notes: field == "notes" ? value : user!.notes,
+    );
+    notifyListeners();
+  }
+
+  void updateFieldImageUrl(String? newImageUrl) {
     if (_user != null) {
-      _user = UserModel(
-        uid: _user?.uid ?? '',
-        docID: _user?.docID ?? '',
-        name: _user?.name ?? '',
-        email: _user?.email ?? '',
-        imageUrl: newImageUrl ?? '', // ✅ Updated imageUrl
-        role: _user?.role ?? '',
-        mobile: _user?.mobile ?? '',
-        address: _user?.address ?? '',
-        gender: _user?.gender ?? '',
-        birthdate: _user?.birthdate ?? DateTime(1900),
-        fatherOfConfession: _user?.fatherOfConfession ?? '',
-        notes: _user?.notes ?? '',
-        mobileFaceNetEmbeddings: _user?.mobileFaceNetEmbeddings ?? [],
-        groupName: _user?.groupName ?? '',
-        motherPhone: _user?.motherPhone ?? '',
-        fatherPhone: _user?.fatherPhone ?? '',
-        grade: _user?.grade ?? 0,
-        school: _user?.school ?? '',
-      );
+      _user = _user!.copyWith(imageUrl: newImageUrl);
       notifyListeners();
     }
   }
+
 }

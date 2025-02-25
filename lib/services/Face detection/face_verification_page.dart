@@ -44,7 +44,7 @@ class FaceVerificationPage extends StatelessWidget {
                 await _uploadImageUrl(context, personID, imageUrl);
 
                 if(user!.uid == FirebaseService().firebaseAuth.currentUser!.uid) {
-                  Provider.of<UserProvider>(context, listen: false).updateImageUrl(imageUrl);
+                  Provider.of<UserProvider>(context, listen: false).updateFieldImageUrl(imageUrl);
                 }
               }
             },

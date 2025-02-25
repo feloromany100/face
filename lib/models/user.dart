@@ -14,7 +14,6 @@ class UserModel {
   final int grade;
   final String school;
   final String address;
-  final String gender;
   final DateTime? birthdate;
   final String fatherOfConfession;
   final String notes;
@@ -34,7 +33,6 @@ class UserModel {
     required this.grade,
     required this.school,
     required this.address,
-    required this.gender,
     required this.birthdate,
     required this.fatherOfConfession,
     required this.notes,
@@ -51,19 +49,53 @@ class UserModel {
       imageUrl: data['imageUrl'] ?? '',
       role: data['role'] ?? 'User',
       mobile: data['mobile'] ?? '',
-      groupName: data['groupName'] ?? '',
-      motherPhone: data['motherPhone'] ?? '',
-      fatherPhone: data['fatherPhone'] ?? '',
+      groupName: data['group_name'] ?? '',
+      motherPhone: data['mother_number'] ?? '',
+      fatherPhone: data['father_number'] ?? '',
       grade: int.tryParse(data['grade'].toString()) ?? 0,
-      school: data['school'] ?? '',
+      school: data['school_college'] ?? '',
       address: data['address'] ?? '',
-      gender: data['gender'] ?? '',
       birthdate: (data['birthdate'] != null && data['birthdate'] is Timestamp)
           ? (data['birthdate'] as Timestamp).toDate()
           : DateTime(1900), // Convert Timestamp to DateTime
       fatherOfConfession: data['father_of_confession'] ?? '',
       notes: data['notes'] ?? '',
       mobileFaceNetEmbeddings: List<double>.from(data['mobileFaceNetEmbeddings'] ?? []),
+    );
+  }
+
+  UserModel? copyWith({
+    String? name,
+    String? mobile,
+    String? email,
+    String? address,
+    DateTime? birthdate,
+    String? fatherOfConfession,
+    String? school,
+    int? grade,
+    String? motherPhone,
+    String? fatherPhone,
+    String? notes,
+    String? imageUrl,
+  }) {
+    return UserModel(
+      docID: docID,
+      mobile: mobile ?? this.mobile,
+      email: email ?? this.email,
+      address: address ?? this.address,
+      birthdate: birthdate ?? this.birthdate,
+      fatherOfConfession: fatherOfConfession ?? this.fatherOfConfession,
+      school: school ?? this.school,
+      grade: grade ?? this.grade,
+      motherPhone: motherPhone ?? this.motherPhone,
+      fatherPhone: fatherPhone ?? this.fatherPhone,
+      uid: uid,
+      name: name ?? this.name,
+      imageUrl: imageUrl ?? this.imageUrl,
+      role: role,
+      groupName: groupName,
+      notes: notes ?? this.notes,
+      mobileFaceNetEmbeddings: mobileFaceNetEmbeddings,
     );
   }
 }
