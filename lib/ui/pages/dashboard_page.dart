@@ -1,4 +1,3 @@
-import 'package:face_recognition/ui/pages/class_page.dart';
 import 'package:face_recognition/ui/widgets/my_app_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -25,10 +24,7 @@ class DashboardPage extends StatelessWidget {
               label: "My Class",
               color: Colors.blueAccent,
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ClassPage()),
-                );
+                Navigator.pushNamed(context, '/classPage');
               },
             ),
             _buildDashboardCard(

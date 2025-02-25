@@ -1,20 +1,16 @@
 <component name="libraryTable">
   <library name="Flutter Plugins" type="FlutterPluginsLibraryType">
     <CLASSES>
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_sign_in_android-6.1.35" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/image_picker_macos-0.2.1+2" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/image_picker-1.1.2" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/image_picker_for_web-3.0.6" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/image_picker_android-0.8.12+20" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_sign_in_web-0.12.4+3" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/file_selector_windows-0.9.3+3" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_mlkit_face_detection-0.12.0" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.1" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/file_selector_macos-0.9.4+2" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/image_picker_ios-0.8.12+2" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_auth_web-5.13.7" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_sign_in-6.2.2" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/google_sign_in_ios-5.8.0" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/camera_web-0.2.1+6" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/firebase_auth-5.4.1" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/tflite_flutter-0.11.0" />
@@ -33,6 +29,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider-2.1.5" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/camera_avfoundation-0.9.18+1" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/file_selector_linux-0.9.3+2" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/file_picker-9.0.0" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

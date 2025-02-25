@@ -1,14 +1,19 @@
 import 'dart:typed_data';
+import 'package:face_recognition/models/user.dart';
+import 'package:face_recognition/services/firebase_services.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
-import '../../main.dart';
+import 'package:provider/provider.dart';
+import '../../providers/user_provider.dart';
 import '../../services/Face recognition/embedding_extraction.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../cloudinary.dart';
 
 class FaceVerificationPage extends StatelessWidget {
   final Uint8List croppedFace;
+  final String personID;
 
-  const FaceVerificationPage({super.key, required this.croppedFace});
+  const FaceVerificationPage({super.key, required this.croppedFace, required this.personID});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +30,24 @@ class FaceVerificationPage extends StatelessWidget {
             const Text('No image available'),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () => _registerFace(context),
+            onPressed: () async {
+              var user = await _getUserData(context);
+              await _registerFace(context, personID);
+              String? imageUrl = await cloudinaryUploadImage(
+                  croppedFace,
+                  user?.name,
+                  oldImageUrl: user?.imageUrl
+              );
+
+              if (imageUrl != null) {
+                // Update Firestore with the new image URL
+                await _uploadImageUrl(context, personID, imageUrl);
+
+                if(user!.uid == FirebaseService().firebaseAuth.currentUser!.uid) {
+                  Provider.of<UserProvider>(context, listen: false).updateImageUrl(imageUrl);
+                }
+              }
+            },
             child: const Text('Register face'),
           ),
         ],
@@ -33,7 +55,7 @@ class FaceVerificationPage extends StatelessWidget {
     );
   }
 
-  Future<void> _registerFace(BuildContext context) async {
+  Future<void> _registerFace(BuildContext context, String userId) async {
     final faceImage = img.decodeImage(croppedFace);
     if (faceImage != null) {
       final extractor = FaceEmbeddingExtractor();
@@ -42,22 +64,37 @@ class FaceVerificationPage extends StatelessWidget {
         print("Model loading failed!");
         return;
       }
-      final mobileFaceNetEmbeddings = await extractor.extractEmbeddingFromMobileFaceNet(faceImage);
-      final faceNetEmbeddings = await extractor.extractEmbeddingFromFaceNet(faceImage);
 
-      print("mobileFaceNetEmbeddings: $mobileFaceNetEmbeddings");
-      print("faceNetEmbeddings: $faceNetEmbeddings");
+      final List<double> mobileFaceNetEmbeddings = await extractor
+          .extractEmbeddingFromMobileFaceNet(faceImage);
+      final List<double> faceNetEmbeddings = await extractor
+          .extractEmbeddingFromFaceNet(faceImage);
 
-      // Save to Firestore
-      await FirebaseFirestore.instance.collection('faces').add({
-        'name': "personName",
+      await FirebaseFirestore.instance.collection('Users').doc(userId).update({
         'mobileFaceNetEmbeddings': mobileFaceNetEmbeddings,
         'faceNetEmbeddings': faceNetEmbeddings,
       });
 
-      scaffoldMessengerKey.currentState?.showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Face registered successfully')),
       );
     }
+  }
+
+  Future<void> _uploadImageUrl(BuildContext context, String userId, String imageUrl) async {
+    await FirebaseFirestore.instance.collection('Users').doc(userId).update({
+      'imageUrl': imageUrl,
+    });
+
+    Navigator.pop(context);
+    Navigator.pop(context);
+
+  }
+
+  Future<UserModel?> _getUserData(BuildContext context) async{
+    FirebaseService firebaseService = FirebaseService();
+    var userData = await firebaseService.getUserData(personID);
+    UserModel user = UserModel.fromMap(userData!, personID);
+    return user;
   }
 }

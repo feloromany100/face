@@ -21,11 +21,15 @@ dependencies:
   path: any
   tflite_flutter:
   firebase_auth:
-  google_sign_in:
-  googleapis:
-  googleapis_auth:
-  extension_google_sign_in_as_googleapis_auth:
   http:
+  file_picker:
+  excel:
+  mailer:
+  flutter_dotenv:
+  provider:
+  intl:
+  cloudinary_public: ^0.23.1
+  cloudinary_sdk:
 
 dev_dependencies:
   flutter_test:
@@ -36,11 +40,12 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    - .env
 
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+  fonts:
+    - family: Tajawal
+      fonts:
+        - asset: assets/Tajawal-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

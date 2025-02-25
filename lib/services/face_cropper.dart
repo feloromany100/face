@@ -22,7 +22,6 @@ Future<img.Image> cropFace(CameraImage image, Face face) async {
   if (cropWidth <= 1 || cropHeight <= 1) {
     throw Exception("Cropped face dimensions are too small");
   }
-  print("Converted image size: ${convertedImage.width}x${convertedImage.height}");
 
   return img.copyCrop(convertedImage, cropLeft, cropTop, cropWidth, cropHeight);
 }

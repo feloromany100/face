@@ -9,19 +9,22 @@ import 'face_verification_page.dart';
 import 'package:image/image.dart' as img;
 
 class FaceDetectorView extends StatefulWidget {
-  const FaceDetectorView({super.key});
+  final String personID;
+  const FaceDetectorView({super.key, required this.personID});
 
   @override
   State<FaceDetectorView> createState() => _FaceDetectorViewState();
 }
 
 class _FaceDetectorViewState extends State<FaceDetectorView> {
+
   final FaceDetector _faceDetector = FaceDetector(
     options: FaceDetectorOptions(
       enableContours: false,
       enableLandmarks: false,
     ),
   );
+
   bool _canProcess = true;
   bool _isBusy = false;
   CustomPaint? _customPaint;
@@ -112,7 +115,7 @@ class _FaceDetectorViewState extends State<FaceDetectorView> {
           context,
           MaterialPageRoute(
             builder: (context) =>
-                FaceVerificationPage(croppedFace: croppedFaceBytes),
+                FaceVerificationPage(croppedFace: croppedFaceBytes, personID: widget.personID),
           ),
         );
       }

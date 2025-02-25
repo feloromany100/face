@@ -4,10 +4,32 @@
 <dict>
     <key>NSCameraUsageDescription</key>
     <string>This app requires access to the camera for face recognition.</string>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
     <key>NSMicrophoneUsageDescription</key>
     <string>This app requires access to the microphone for video recording.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSPasteboardUsageDescription</key>
+    <string>This app requires access to paste text.</string>
+	<key>GIDClientID</key>
+    <string>300449714333-7788edpuatvfhcbi5l7jkfn7iv18kpjk.apps.googleusercontent.com</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>com.googleusercontent.apps.300449714333-7788edpuatvfhcbi5l7jkfn7iv18kpjk</string>
+            </array>
+        </dict>
+    </array>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>We need access to your files to upload an Excel sheet.</string>
+    <key>LSSupportsOpeningDocumentsInPlace</key>
+    <true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

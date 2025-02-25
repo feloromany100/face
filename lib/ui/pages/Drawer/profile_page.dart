@@ -1,41 +1,30 @@
+import 'package:face_recognition/services/firebase_services.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import '../../../models/user.dart';
+import '../../../providers/user_provider.dart';
+import '../../../services/Face detection/face_detector_view.dart';
 
-class ProfilePage extends StatelessWidget {
-  final String name;
-  final String gender;
-  final String birthdate;
-  final String mobilePhone;
-  final String email;
-  final String fatherOfConfession;
-  final String school;
-  final String grade;
-  final String address;
-  final String groupName;
-  final String motherPhone;
-  final String fatherPhone;
-  final String notes;
-  final String imageUrl; // Profile picture URL
+class ProfilePage extends StatefulWidget {
+  final String personID;
 
-  const ProfilePage({
-    super.key,
-    required this.name,
-    required this.gender,
-    required this.birthdate,
-    required this.mobilePhone,
-    required this.email,
-    required this.fatherOfConfession,
-    required this.school,
-    required this.grade,
-    required this.address,
-    required this.groupName,
-    required this.motherPhone,
-    required this.fatherPhone,
-    required this.notes,
-    required this.imageUrl,
-  });
+  const ProfilePage({super.key, required this.personID});
 
   @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+   UserModel? userData;
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+  @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(title: const Text("Profile")),
       body: SingleChildScrollView(
@@ -43,36 +32,46 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           children: [
             // Profile Image
-            CircleAvatar(
-              radius: 60,
-              backgroundImage: NetworkImage(imageUrl),
+            InkWell(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) => FaceDetectorView(personID: userData!.docID,)));
+              },
+              child: userData?.imageUrl != '' ?
+              CircleAvatar(
+                radius: 60,
+                backgroundImage: NetworkImage(userData!.imageUrl),
+              ) :
+              const CircleAvatar(
+                radius: 60,
+                backgroundImage: AssetImage("assets/unknown.png"),
+              ),
             ),
             const SizedBox(height: 10),
             Text(
-              name,
+              userData!.name,
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 5),
             Text(
-              "Group: $groupName",
+              userData!.groupName,
               style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
             ),
             const SizedBox(height: 15),
 
             // Info Cards
-            _buildInfoCard(Icons.person, "Gender", gender),
-            _buildInfoCard(Icons.calendar_today, "Birthdate", birthdate),
-            _buildInfoCard(Icons.phone, "Mobile Phone", mobilePhone),
-            _buildInfoCard(Icons.email, "Email", email),
-            _buildInfoCard(Icons.church, "Father of Confession", fatherOfConfession),
-            _buildInfoCard(Icons.school, "School", school),
-            _buildInfoCard(Icons.grade, "Grade", grade),
-            _buildInfoCard(Icons.home, "Address", address),
-            _buildInfoCard(Icons.phone_android, "Mother's phone", motherPhone),
-            _buildInfoCard(Icons.phone_android, "Father's phone", fatherPhone),
+            _buildInfoCard(Icons.person, "Gender", userData?.gender),
+            _buildInfoCard(Icons.calendar_today, "Birthdate", userData?.birthdate),
+            _buildInfoCard(Icons.phone, "Mobile Phone", userData?.mobile),
+            _buildInfoCard(Icons.email, "Email", userData?.email),
+            _buildInfoCard(Icons.church, "Father of Confession", userData?.fatherOfConfession),
+            _buildInfoCard(Icons.school, "School", userData?.school),
+            _buildInfoCard(Icons.grade, "Grade", userData?.grade),
+            _buildInfoCard(Icons.home, "Address", userData?.address),
+            _buildInfoCard(Icons.phone_android, "Mother's phone", userData?.motherPhone),
+            _buildInfoCard(Icons.phone_android, "Father's phone", userData?.fatherPhone),
 
             // Notes Section
-            if (notes.isNotEmpty)
+            if (userData!.notes.isNotEmpty)
               Card(
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 child: Padding(
@@ -85,7 +84,7 @@ class ProfilePage extends StatelessWidget {
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 5),
-                      Text(notes, style: const TextStyle(fontSize: 16)),
+                      Text(userData!.notes, style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),
@@ -96,7 +95,15 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoCard(IconData icon, String label, String value) {
+  Widget _buildInfoCard(IconData icon, String label, dynamic value) {
+    String formattedValue;
+
+    if (value is DateTime) {
+      formattedValue = DateFormat('yyyy-MM-dd').format(value); // Format as needed
+    } else {
+      formattedValue = value.toString(); // Keep string values unchanged
+    }
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -106,8 +113,36 @@ class ProfilePage extends StatelessWidget {
           label,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        subtitle: Text(value, style: const TextStyle(fontSize: 16)),
+        subtitle: Text(formattedValue, style: const TextStyle(fontSize: 16)),
       ),
     );
   }
+
+   Future<UserModel?> _getUserData(BuildContext context, String id) async {
+     final userProvider = Provider.of<UserProvider>(context, listen: false);
+     var currentUserData = userProvider.user;
+
+     FirebaseService firebaseService = FirebaseService();
+     var data = await firebaseService.getUserData(widget.personID);
+
+     if (data == null) return null; // Ensure data exists before mapping
+     var studentUserData = UserModel.fromMap(data, widget.personID);
+
+     if (currentUserData != null && id == currentUserData.docID) {
+       return currentUserData;
+     } else {
+       return studentUserData;
+     }
+   }
+
+   Future<void> _loadUserData() async {
+     UserModel? fetchedUser = await _getUserData(context, widget.personID);
+     if (mounted) {
+       setState(() {
+         userData = fetchedUser;
+       });
+     }
+   }
 }
+
+

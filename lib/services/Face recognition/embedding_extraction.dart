@@ -2,9 +2,16 @@ import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 import 'package:image/image.dart' as img;
 
 class FaceEmbeddingExtractor {
+  static final FaceEmbeddingExtractor _instance = FaceEmbeddingExtractor._internal();
   late tfl.Interpreter mobileFaceNetInterpreter;
   late tfl.Interpreter faceNetInterpreter;
   bool _isLoaded = false;
+
+  // Private constructor
+  FaceEmbeddingExtractor._internal();
+
+  // Factory constructor to return the same instance
+  factory FaceEmbeddingExtractor() => _instance;
 
   Future<bool> loadModel() async {
     if (!_isLoaded) {
@@ -12,13 +19,13 @@ class FaceEmbeddingExtractor {
         mobileFaceNetInterpreter = await tfl.Interpreter.fromAsset('assets/mobilefacenet.tflite');
         faceNetInterpreter = await tfl.Interpreter.fromAsset('assets/facenet.tflite');
         _isLoaded = true;
-        return true; // Indicate success
+        print("Models loaded successfully!");
       } catch (e) {
         print("Error loading models: $e");
-        return false; // Indicate failure
+        return false;
       }
     }
-    return true; // Already loaded
+    return true;
   }
 
   Future<List<double>> extractEmbeddingFromMobileFaceNet(img.Image faceImage) async {

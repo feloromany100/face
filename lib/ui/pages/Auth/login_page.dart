@@ -1,5 +1,6 @@
-import 'package:face_recognition/ui/pages/dashboard_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../providers/user_provider.dart';
 import '../../../services/firebase_services.dart';
 import '../../widgets/my_text_field.dart';
 import 'forgot_password.dart';
@@ -31,20 +32,23 @@ class _LoginState extends State<LoginPage> {
     setState(() => loading = true);
 
     try {
-      final result = await AuthService().login(
+      final firebaseService = FirebaseService();
+      final result = await firebaseService.login(
         emailController.text.trim(),
         passwordController.text.trim(),
       );
 
-      if (mounted) {
-        setState(() => loading = false); // Ensure loading stops
+      if (result != null) {
+        final userProvider = context.read<UserProvider>();
+        await userProvider.fetchCurrentUserData(); // Fetch and store user data
 
-        if (result != null) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const DashboardPage()),
-          );
-        } else {
+        if (mounted) {
+          setState(() => loading = false);
+          Navigator.pushReplacementNamed(context, '/dashboard');
+        }
+      } else {
+        if (mounted) {
+          setState(() => loading = false);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Invalid email or password.")),
           );
@@ -54,7 +58,7 @@ class _LoginState extends State<LoginPage> {
       if (mounted) {
         setState(() => loading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Invalid email or password.")),
+          const SnackBar(content: Text("Something went wrong. Please try again.")),
         );
       }
     }

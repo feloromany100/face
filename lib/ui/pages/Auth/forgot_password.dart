@@ -26,7 +26,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     setState(() => loading = true);
 
     try {
-      await AuthService().resetPassword(emailController.text.trim());
+      await FirebaseService().resetPassword(emailController.text.trim());
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Password reset email sent!")),
